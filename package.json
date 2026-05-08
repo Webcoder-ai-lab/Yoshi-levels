@@ -1,0 +1,13 @@
+{
+  "name": "space-station-2p-mvp",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "start": "npm run build && npx http-server -p 8080 -c-1 .",
+    "serve": "npx http-server -p 8080 -c-1 ."
+  },
+  "devDependencies": {
+    "typescript": "^5.0.4"
+  }
+}
