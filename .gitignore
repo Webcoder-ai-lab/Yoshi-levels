@@ -1,6 +1,0 @@
-node_modules/
-dist/*.map
-*.js.map
-.DS_Store
-Thumbs.db
-*.log
