@@ -7,7 +7,7 @@ type Screen = 'title' | 'playing' | 'levelClear' | 'gameOver' | 'victory';
 interface Vec2 { x: number; y: number; }
 interface Rect { x: number; y: number; w: number; h: number; }
 
-const W = 960, H = 540;
+const W = 960, H = 540, VERSION = 'v1.2';
 const GRAVITY = 850, JUMP_V = -370, FLUTTER_V = -80, MAX_FLUTTER = 0.45;
 const MOVE_SPD = 170, TONGUE_RNG = 55, TONGUE_TIME = 0.25;
 const EGG_SPD = 320, ENEMY_SPD = 45, PLAYER_H = 28, PLAYER_R = 13;
@@ -819,6 +819,9 @@ class YorsiGame {
 
     // HUD
     drawHUD(ctx, this.players, this.level, this.theme);
+    ctx.fillStyle = 'rgba(255,255,255,0.3)';
+    ctx.font = '11px monospace';
+    ctx.fillText(VERSION, 6, H - 6);
 
     // Overlays
     if (this.screen === 'levelClear') this.drawOverlay(ctx, 'Level Clear!', '#4f4');

@@ -1,7 +1,7 @@
 // Yorsi — Yoshi-inspired platformer, 1-2 players, 10 levels, 5 themes
 // Controls: P1 Pijlen+↑spring+↓tong  |  P2 WASD+Wspring+Stong
 (function() {
-  var W = 960, H = 540;
+  var W = 960, H = 540, VERSION = 'v1.2';
   var GRAVITY = 850, JUMP_V = -370, FLUTTER_V = -80, MAX_FLUTTER = 0.45;
   var MOVE_SPD = 170, TONGUE_RNG = 55, TONGUE_TIME = 0.25;
   var EGG_SPD = 320, ENEMY_SPD = 45, PLAYER_R = 13;
@@ -764,6 +764,9 @@
     for (var t = 0; t < this.players.length; t++) this.players[t].draw(ctx, this.cam);
 
     drawHUD(ctx, this.players, this.level, this.theme);
+    ctx.fillStyle = 'rgba(255,255,255,0.3)';
+    ctx.font = '11px monospace';
+    ctx.fillText(VERSION, 6, H - 6);
 
     if (this.screen === 'levelClear') this.drawOverlay(ctx, 'Level Clear!', '#4f4');
     if (this.screen === 'gameOver') this.drawOverlay(ctx, 'Game Over', '#f44');
