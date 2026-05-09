@@ -137,11 +137,32 @@
     this.hasEgg = false; this.tongue = false; this.tongueT = 0;
     this.lives = 3; this.score = 0; this.invinc = 0;
     this.powerUp = null;
+    this.ghostTimer = 0; this.justRevived = false;
     this.color = color; this.saddle = saddle;
     this.moveL = moveL; this.moveR = moveR; this.jumpKey = jumpKey; this.actKey = actKey;
     this.id = id;
   }
   Player.prototype.update = function(dt, inp, plats, coins, enemies, eggs, lw) {
+    // Ghost flight
+    if (this.ghostTimer > 0) {
+      this.ghostTimer -= dt;
+      var mx = 0, my = 0;
+      if (inp.down(this.moveL)) mx -= 1;
+      if (inp.down(this.moveR)) mx += 1;
+      if (inp.down(this.jumpKey)) my -= 1;
+      if (inp.down(this.actKey)) my += 1;
+      var spd = 150;
+      this.pos.x += mx * spd * dt;
+      this.pos.y += my * spd * dt;
+      if (this.pos.x < -50) this.pos.x = -50;
+      if (this.pos.x > lw + 50) this.pos.x = lw + 50;
+      if (this.pos.y > H + 200) this.pos.y = H + 200;
+      if (this.pos.y < -400) this.pos.y = -400;
+      if (this.ghostTimer <= 0) { this.lives = 1; this.invinc = 2; this.ghostTimer = 0; this.justRevived = true; }
+      this.phase += dt;
+      return;
+    }
+
     if (this.lives <= 0) return;
     if (this.invinc > 0) this.invinc -= dt;
 
@@ -252,6 +273,7 @@
     var sx = this.pos.x - cam.x, sy = this.pos.y - cam.y;
 
     ctx.save(); ctx.translate(sx, sy);
+    if (this.ghostTimer > 0) ctx.globalAlpha = 0.35;
 
     // Disco effect (only star power-up)
     var origColor = this.color;
@@ -482,13 +504,6 @@
     this.powerUps = [];
     this.powerUpSpawnTimer = POWERUP_SPAWN_INTERVAL;
 
-    // Revive dead players in 2-player mode
-    if (this.numPlayers >= 2) {
-      for (var r = 0; r < this.players.length; r++) {
-        if (this.players[r].lives <= 0) this.players[r].lives = 1;
-      }
-    }
-
     if (this.players.length === 0) {
       this.players.push(new Player(1, 60, 60, '#4bc84b', '#d04040', 'ArrowLeft','ArrowRight','ArrowUp','ArrowDown'));
     }
@@ -582,11 +597,33 @@
     for (var n = 0; n < this.players.length; n++)
       this.players[n].update(dt, this.inp, this.plats, this.coins, this.enemies, this.eggs, this.lw);
 
+    // Ghost system (2-player)
+    if (this.numPlayers >= 2) {
+      for (var g = 0; g < this.players.length; g++) {
+        var gp = this.players[g];
+        if (gp.lives <= 0 && gp.ghostTimer === 0) gp.ghostTimer = 5;
+        if (gp.justRevived) {
+          gp.justRevived = false;
+          for (var go = 0; go < this.players.length; go++) {
+            var other = this.players[go];
+            if (other !== gp && other.lives > 0) {
+              gp.pos.x = other.pos.x + (other.id === 1 ? 40 : -40);
+              gp.pos.y = other.pos.y - 10;
+              break;
+            }
+          }
+        }
+      }
+    }
+
     this.cam.follow(this.players, this.lw);
 
-    var aliveCount = 0;
-    for (var a = 0; a < this.players.length; a++) if (this.players[a].lives > 0) aliveCount++;
-    if (aliveCount === 0) { this.screen = 'gameOver'; this.inp.endFrame(); return; }
+    var aliveCount = 0, ghostCount = 0;
+    for (var a = 0; a < this.players.length; a++) {
+      if (this.players[a].lives > 0) aliveCount++;
+      if (this.players[a].ghostTimer > 0) ghostCount++;
+    }
+    if (aliveCount === 0 && ghostCount === 0) { this.screen = 'gameOver'; this.inp.endFrame(); return; }
 
     for (var b = 0; b < this.players.length; b++) {
       var p = this.players[b];

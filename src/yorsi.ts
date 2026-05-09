@@ -137,6 +137,7 @@ class Player {
   lives = 3; score = 0; invinc = 0; color: string; saddle: string; phase = 0;
   moveL: string; moveR: string; jumpKey: string; actKey: string;
   powerUp: { type: PowerUpType; timer: number } | null = null;
+  ghostTimer = 0; justRevived = false;
 
   constructor(id: number, x: number, y: number, color: string, saddle: string,
               moveL: string, moveR: string, jumpKey: string, actKey: string) {
@@ -146,6 +147,26 @@ class Player {
   }
 
   update(dt: number, inp: Input, plats: Platform[], coins: Coin[], enemies: Enemy[], eggs: Egg[], lw: number) {
+    // Ghost flight (before lives check)
+    if (this.ghostTimer > 0) {
+      this.ghostTimer -= dt;
+      let mx = 0, my = 0;
+      if (inp.down(this.moveL)) mx -= 1;
+      if (inp.down(this.moveR)) mx += 1;
+      if (inp.down(this.jumpKey)) my -= 1;
+      if (inp.down(this.actKey)) my += 1;
+      const spd = 150;
+      this.pos.x += mx * spd * dt;
+      this.pos.y += my * spd * dt;
+      if (this.pos.x < -50) this.pos.x = -50;
+      if (this.pos.x > lw + 50) this.pos.x = lw + 50;
+      if (this.pos.y > H + 200) this.pos.y = H + 200;
+      if (this.pos.y < -400) this.pos.y = -400;
+      if (this.ghostTimer <= 0) { this.lives = 1; this.invinc = 2; this.ghostTimer = 0; this.justRevived = true; }
+      this.phase += dt;
+      return;
+    }
+
     if (this.lives <= 0) return;
     if (this.invinc > 0) this.invinc -= dt;
 
@@ -252,6 +273,7 @@ class Player {
     const sx = this.pos.x - cam.x, sy = this.pos.y - cam.y;
 
     ctx.save(); ctx.translate(sx, sy);
+    if (this.ghostTimer > 0) ctx.globalAlpha = 0.35;
 
     // Disco effect (only star power-up)
     const origColor = this.color;
@@ -512,13 +534,6 @@ class YorsiGame {
     this.powerUps = [];
     this.powerUpSpawnTimer = POWERUP_SPAWN_INTERVAL;
 
-    // Revive dead players in 2-player mode
-    if (this.numPlayers >= 2) {
-      for (const p of this.players) {
-        if (p.lives <= 0) p.lives = 1;
-      }
-    }
-
     if (this.players.length === 0) {
       this.players.push(new Player(1, 60, 60, '#4bc84b', '#d04040', 'ArrowLeft','ArrowRight','ArrowUp','ArrowDown'));
     }
@@ -613,12 +628,29 @@ class YorsiGame {
     }
     for (const p of this.players) p.update(dt, this.inp, this.plats, this.coins, this.enemies, this.eggs, this.lw);
 
+    // Ghost system (2-player)
+    if (this.numPlayers >= 2) {
+      for (const p of this.players) {
+        if (p.lives <= 0 && p.ghostTimer === 0) p.ghostTimer = 5;
+        if (p.justRevived) {
+          p.justRevived = false;
+          for (const other of this.players) {
+            if (other !== p && other.lives > 0) {
+              p.pos.x = other.pos.x + (other.id === 1 ? 40 : -40);
+              p.pos.y = other.pos.y - 10;
+              break;
+            }
+          }
+        }
+      }
+    }
+
     this.cam.follow(this.players, this.lw);
 
     // Check level clear
-    let aliveCount = 0;
-    for (const p of this.players) if (p.lives > 0) aliveCount++;
-    if (aliveCount === 0) { this.screen = 'gameOver'; this.inp.endFrame(); return; }
+    let aliveCount = 0, ghostCount = 0;
+    for (const p of this.players) { if (p.lives > 0) aliveCount++; if (p.ghostTimer > 0) ghostCount++; }
+    if (aliveCount === 0 && ghostCount === 0) { this.screen = 'gameOver'; this.inp.endFrame(); return; }
 
     for (const p of this.players) {
       if (p.lives <= 0) continue;
