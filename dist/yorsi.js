@@ -133,7 +133,7 @@
   // --- Player (Yoshi) -------------------------------------------------------
   function Player(id, x, y, color, saddle, moveL, moveR, jumpKey, actKey) {
     this.pos = { x: x, y: y }; this.vel = { x: 0, y: 0 };
-    this.facing = 1; this.grounded = false; this.flutter = 0;
+    this.facing = 1; this.grounded = false; this.flutter = 0; this.phase = 0;
     this.hasEgg = false; this.tongue = false; this.tongueT = 0;
     this.lives = 3; this.score = 0; this.invinc = 0;
     this.powerUp = null;
@@ -150,6 +150,7 @@
       this.powerUp.timer -= dt;
       if (this.powerUp.timer <= 0) this.powerUp = null;
     }
+    this.phase += dt;
 
     var mx = 0;
     if (inp.down(this.moveL)) mx -= 1;
@@ -252,9 +253,9 @@
 
     ctx.save(); ctx.translate(sx, sy);
 
-    // Disco effect
+    // Disco effect (only star power-up)
     var origColor = this.color;
-    if (this.powerUp) {
+    if (this.powerUp && this.powerUp.type === 'star') {
       var hue = (this.powerUp.timer * 120) % 360;
       this.color = 'hsl(' + hue + ', 100%, 60%)';
     }
@@ -305,6 +306,33 @@
     if (this.hasEgg) {
       ctx.fillStyle = '#f0f0e8'; ctx.strokeStyle = '#888'; ctx.lineWidth = 1;
       ctx.beginPath(); ctx.ellipse(0, -20, 5, 7, 0, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+    }
+
+    // Power-up particle effects
+    if (this.powerUp && this.powerUp.type === 'highJump' && !this.grounded) {
+      ctx.strokeStyle = 'rgba(255,255,255,0.7)';
+      ctx.lineWidth = 1.5;
+      for (var pi = 0; pi < 3; pi++) {
+        var ax = -7 + pi * 7;
+        var ay = 10 + Math.sin(this.phase * 20 + pi * 2) * 3;
+        ctx.beginPath();
+        ctx.moveTo(ax, ay + 5); ctx.lineTo(ax, ay);
+        ctx.lineTo(ax - 3, ay + 2); ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(ax, ay); ctx.lineTo(ax + 3, ay + 2); ctx.stroke();
+      }
+    }
+    if (this.powerUp && this.powerUp.type === 'speed' && Math.abs(this.vel.x) > 10) {
+      ctx.strokeStyle = '#fe0';
+      ctx.lineWidth = 2; ctx.lineCap = 'round';
+      for (var si = 0; si < 2; si++) {
+        var lx = -this.facing * 14 - si * 7;
+        var ly = -2 + si * 5;
+        ctx.beginPath();
+        ctx.moveTo(lx, ly - 4); ctx.lineTo(lx - 1, ly);
+        ctx.lineTo(lx + 1, ly); ctx.lineTo(lx - 1, ly + 4);
+        ctx.stroke();
+      }
     }
 
     if (this.powerUp) this.color = origColor;

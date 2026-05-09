@@ -134,7 +134,7 @@ class Egg {
 class Player {
   pos: Vec2; vel: Vec2; facing = 1; grounded = false; flutter = 0;
   hasEgg = false; tongue = false; tongueT = 0; tongueTip?: Vec2;
-  lives = 3; score = 0; invinc = 0; color: string; saddle: string;
+  lives = 3; score = 0; invinc = 0; color: string; saddle: string; phase = 0;
   moveL: string; moveR: string; jumpKey: string; actKey: string;
   powerUp: { type: PowerUpType; timer: number } | null = null;
 
@@ -154,6 +154,7 @@ class Player {
       this.powerUp.timer -= dt;
       if (this.powerUp.timer <= 0) this.powerUp = null;
     }
+    this.phase += dt;
 
     let mx = 0;
     if (inp.down(this.moveL)) mx -= 1;
@@ -252,9 +253,9 @@ class Player {
 
     ctx.save(); ctx.translate(sx, sy);
 
-    // Disco effect
+    // Disco effect (only star power-up)
     const origColor = this.color;
-    if (this.powerUp) {
+    if (this.powerUp?.type === 'star') {
       const hue = (this.powerUp.timer * 120) % 360;
       this.color = `hsl(${hue}, 100%, 60%)`;
     }
@@ -308,6 +309,33 @@ class Player {
     if (this.hasEgg) {
       ctx.fillStyle = '#f0f0e8'; ctx.strokeStyle = '#888'; ctx.lineWidth = 1;
       ctx.beginPath(); ctx.ellipse(0, -20, 5, 7, 0, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+    }
+
+    // Power-up particle effects
+    if (this.powerUp?.type === 'highJump' && !this.grounded) {
+      ctx.strokeStyle = 'rgba(255,255,255,0.7)';
+      ctx.lineWidth = 1.5;
+      for (let i = 0; i < 3; i++) {
+        const ax = -7 + i * 7;
+        const ay = 10 + Math.sin(this.phase * 20 + i * 2) * 3;
+        ctx.beginPath();
+        ctx.moveTo(ax, ay + 5); ctx.lineTo(ax, ay);
+        ctx.lineTo(ax - 3, ay + 2); ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(ax, ay); ctx.lineTo(ax + 3, ay + 2); ctx.stroke();
+      }
+    }
+    if (this.powerUp?.type === 'speed' && Math.abs(this.vel.x) > 10) {
+      ctx.strokeStyle = '#fe0';
+      ctx.lineWidth = 2; ctx.lineCap = 'round';
+      for (let i = 0; i < 2; i++) {
+        const lx = -this.facing * 14 - i * 7;
+        const ly = -2 + i * 5;
+        ctx.beginPath();
+        ctx.moveTo(lx, ly - 4); ctx.lineTo(lx - 1, ly);
+        ctx.lineTo(lx + 1, ly); ctx.lineTo(lx - 1, ly + 4);
+        ctx.stroke();
+      }
     }
 
     if (this.powerUp) this.color = origColor;
