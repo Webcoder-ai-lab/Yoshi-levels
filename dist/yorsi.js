@@ -137,7 +137,7 @@
     this.hasEgg = false; this.tongue = false; this.tongueT = 0;
     this.lives = 3; this.score = 0; this.invinc = 0;
     this.powerUp = null;
-    this.ghostTimer = 0; this.justRevived = false;
+    this.ghostTimer = 0; this.justRevived = false; this._prevLives = 3;
     this.color = color; this.saddle = saddle;
     this.moveL = moveL; this.moveR = moveR; this.jumpKey = jumpKey; this.actKey = actKey;
     this.id = id;
@@ -158,7 +158,7 @@
       if (this.pos.x > lw + 50) this.pos.x = lw + 50;
       if (this.pos.y > H + 200) this.pos.y = H + 200;
       if (this.pos.y < -400) this.pos.y = -400;
-      if (this.ghostTimer <= 0) { this.lives = 1; this.invinc = 2; this.ghostTimer = 0; this.justRevived = true; }
+      if (this.ghostTimer <= 0) { if (this.lives <= 0) this.lives = 1; this.invinc = 2; this.ghostTimer = 0; this.justRevived = true; }
       this.phase += dt;
       return;
     }
@@ -601,7 +601,8 @@
     if (this.numPlayers >= 2) {
       for (var g = 0; g < this.players.length; g++) {
         var gp = this.players[g];
-        if (gp.lives <= 0 && gp.ghostTimer === 0) gp.ghostTimer = 5;
+        if (gp.lives < gp._prevLives && gp.ghostTimer === 0) gp.ghostTimer = 5;
+        gp._prevLives = gp.lives;
         if (gp.justRevived) {
           gp.justRevived = false;
           for (var go = 0; go < this.players.length; go++) {

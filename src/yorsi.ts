@@ -137,7 +137,7 @@ class Player {
   lives = 3; score = 0; invinc = 0; color: string; saddle: string; phase = 0;
   moveL: string; moveR: string; jumpKey: string; actKey: string;
   powerUp: { type: PowerUpType; timer: number } | null = null;
-  ghostTimer = 0; justRevived = false;
+  ghostTimer = 0; justRevived = false; _prevLives = 3;
 
   constructor(id: number, x: number, y: number, color: string, saddle: string,
               moveL: string, moveR: string, jumpKey: string, actKey: string) {
@@ -162,7 +162,7 @@ class Player {
       if (this.pos.x > lw + 50) this.pos.x = lw + 50;
       if (this.pos.y > H + 200) this.pos.y = H + 200;
       if (this.pos.y < -400) this.pos.y = -400;
-      if (this.ghostTimer <= 0) { this.lives = 1; this.invinc = 2; this.ghostTimer = 0; this.justRevived = true; }
+      if (this.ghostTimer <= 0) { if (this.lives <= 0) this.lives = 1; this.invinc = 2; this.ghostTimer = 0; this.justRevived = true; }
       this.phase += dt;
       return;
     }
@@ -631,7 +631,8 @@ class YorsiGame {
     // Ghost system (2-player)
     if (this.numPlayers >= 2) {
       for (const p of this.players) {
-        if (p.lives <= 0 && p.ghostTimer === 0) p.ghostTimer = 5;
+        if (p.lives < p._prevLives && p.ghostTimer === 0) p.ghostTimer = 5;
+        p._prevLives = p.lives;
         if (p.justRevived) {
           p.justRevived = false;
           for (const other of this.players) {
