@@ -1,4 +1,4 @@
-// Yorsi — Yoshi-inspired platformer, 1–2 players, 10 levels, 5 themes
+// Yoshi platformer, 1–2 players, 10 levels, 5 themes
 // Controls: P1 Pijlen+↑spring+↓tong  |  P2 WASD+Wspring+Stong
 
 type Theme = 'jungle' | 'desert' | 'snow' | 'volcano' | 'sky';
@@ -44,7 +44,7 @@ class Input {
 class MobileInput {
   canvas: HTMLCanvasElement;
   inp: Input;
-  game: YorsiGame;
+  game: YoshiGame;
   active = false;
 
   // Touch tracking
@@ -59,7 +59,7 @@ class MobileInput {
   // Action button just-pressed per zone
   actionJust = new Map<string, boolean>();
 
-  constructor(canvas: HTMLCanvasElement, inp: Input, game: YorsiGame) {
+  constructor(canvas: HTMLCanvasElement, inp: Input, game: YoshiGame) {
     this.canvas = canvas;
     this.inp = inp;
     this.game = game;
@@ -740,7 +740,7 @@ function drawHUD(ctx: CanvasRenderingContext2D, players: Player[], level: number
 }
 
 // ─── Main Game ───────────────────────────────────────────────────────────────
-class YorsiGame {
+class YoshiGame {
   canvas: HTMLCanvasElement; ctx: CanvasRenderingContext2D;
   inp = new Input();
   mobile: MobileInput;
@@ -1287,6 +1287,6 @@ class YorsiGame {
 window.addEventListener('load', () => {
   const canvas = document.getElementById('c') as HTMLCanvasElement;
   if (!canvas) { document.body.innerHTML = '<h1>Canvas not found</h1>'; return; }
-  const game = new YorsiGame(canvas);
+  const game = new YoshiGame(canvas);
   game.start();
 });

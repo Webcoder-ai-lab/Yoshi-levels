@@ -1,4 +1,4 @@
-// Yorsi — Yoshi-inspired platformer, 1-2 players, 10 levels, 5 themes
+// Yoshi — Yoshi-inspired platformer, 1-2 players, 10 levels, 5 themes
 // Controls: P1 Pijlen+↑spring+↓tong  |  P2 WASD+Wspring+Stong
 (function() {
   var W = 960, H = 540, VERSION = 'v1.3';
@@ -692,7 +692,7 @@
   }
 
   // --- Main Game ------------------------------------------------------------
-  function YorsiGame(canvas) {
+  function YoshiGame(canvas) {
     this.canvas = canvas;
     this.ctx = canvas.getContext('2d');
     this.inp = new Input();
@@ -741,7 +741,7 @@
     canvas.focus();
   }
 
-  YorsiGame.prototype.startLevel = function() {
+  YoshiGame.prototype.startLevel = function() {
     var g = genLevel(this.level);
     this.theme = g.theme; this.lw = g.lw; this.flagX = g.flagX;
     this.baseY = g.baseY;
@@ -764,7 +764,7 @@
     }
   };
 
-  YorsiGame.prototype.update = function(dt) {
+  YoshiGame.prototype.update = function(dt) {
     this.titleTime += dt;
 
     if (this.screen === 'title') {
@@ -897,7 +897,7 @@
     this.inp.endFrame();
   };
 
-  YorsiGame.prototype.render = function() {
+  YoshiGame.prototype.render = function() {
     var ctx = this.ctx;
     ctx.clearRect(0, 0, W, H);
 
@@ -1036,7 +1036,7 @@
     this.mobile.draw(ctx);
   };
 
-  YorsiGame.prototype.drawOverlay = function(ctx, text, color) {
+  YoshiGame.prototype.drawOverlay = function(ctx, text, color) {
     ctx.save();
     ctx.fillStyle = 'rgba(0,0,0,0.6)';
     ctx.fillRect(0, 0, W, H);
@@ -1052,7 +1052,7 @@
     ctx.restore();
   };
 
-  YorsiGame.prototype.drawVictory = function(ctx) {
+  YoshiGame.prototype.drawVictory = function(ctx) {
     ctx.save();
     ctx.fillStyle = 'rgba(0,0,0,0.6)';
     ctx.fillRect(0, 0, W, H);
@@ -1074,7 +1074,7 @@
     ctx.restore();
   };
 
-  YorsiGame.prototype.drawTitle = function(ctx) {
+  YoshiGame.prototype.drawTitle = function(ctx) {
     var t = this.titleTime;
     drawBg(ctx, 'sky', { x: 0, y: 0 }, W);
 
@@ -1171,7 +1171,7 @@
     ctx.restore();
   };
 
-  YorsiGame.prototype.loop = function(now) {
+  YoshiGame.prototype.loop = function(now) {
     if (!this._last) this._last = now;
     var dt = Math.min(0.033, (now - this._last) / 1000);
     this._last = now;
@@ -1180,13 +1180,13 @@
     this.render();
     requestAnimationFrame(this.loop.bind(this));
   };
-  YorsiGame.prototype.start = function() { requestAnimationFrame(this.loop.bind(this)); };
+  YoshiGame.prototype.start = function() { requestAnimationFrame(this.loop.bind(this)); };
 
   // --- Boot ------------------------------------------------------------------
   window.addEventListener('load', function() {
     var canvas = document.getElementById('c');
     if (!canvas) { document.body.innerHTML = '<h1>Canvas not found</h1>'; return; }
-    var game = new YorsiGame(canvas);
+    var game = new YoshiGame(canvas);
     game.start();
   });
 })();
