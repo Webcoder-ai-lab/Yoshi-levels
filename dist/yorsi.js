@@ -273,7 +273,8 @@
     var sx = this.pos.x - cam.x, sy = this.pos.y - cam.y;
 
     ctx.save(); ctx.translate(sx, sy);
-    if (this.ghostTimer > 0) ctx.globalAlpha = 0.35;
+    if (this.ghostTimer > 0) ctx.globalAlpha = 0.55;
+    if (this.ghostTimer > 0) { ctx.fillStyle = 'rgba(100,150,255,0.15)'; ctx.beginPath(); ctx.arc(0, 0, 20, 0, Math.PI * 2); ctx.fill(); }
 
     // Disco effect (only star power-up)
     var origColor = this.color;
@@ -601,7 +602,14 @@
     if (this.numPlayers >= 2) {
       for (var g = 0; g < this.players.length; g++) {
         var gp = this.players[g];
-        if (gp.lives < gp._prevLives && gp.ghostTimer === 0) gp.ghostTimer = 5;
+        if (gp.lives < gp._prevLives && gp.ghostTimer === 0) {
+          gp.ghostTimer = 5;
+          gp.vel.x = 0; gp.vel.y = 0;
+          for (var go2 = 0; go2 < this.players.length; go2++) {
+            var other2 = this.players[go2];
+            if (other2 !== gp && other2.lives > 0) { gp.pos.x = other2.pos.x + (other2.id === 1 ? 30 : -30); gp.pos.y = other2.pos.y; break; }
+          }
+        }
         gp._prevLives = gp.lives;
         if (gp.justRevived) {
           gp.justRevived = false;

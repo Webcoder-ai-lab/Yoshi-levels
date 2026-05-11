@@ -273,7 +273,8 @@ class Player {
     const sx = this.pos.x - cam.x, sy = this.pos.y - cam.y;
 
     ctx.save(); ctx.translate(sx, sy);
-    if (this.ghostTimer > 0) ctx.globalAlpha = 0.35;
+    if (this.ghostTimer > 0) ctx.globalAlpha = 0.55;
+    if (this.ghostTimer > 0) { ctx.fillStyle = 'rgba(100,150,255,0.15)'; ctx.beginPath(); ctx.arc(0, 0, 20, 0, Math.PI * 2); ctx.fill(); }
 
     // Disco effect (only star power-up)
     const origColor = this.color;
@@ -631,7 +632,13 @@ class YorsiGame {
     // Ghost system (2-player)
     if (this.numPlayers >= 2) {
       for (const p of this.players) {
-        if (p.lives < p._prevLives && p.ghostTimer === 0) p.ghostTimer = 5;
+        if (p.lives < p._prevLives && p.ghostTimer === 0) {
+          p.ghostTimer = 5;
+          p.vel.x = 0; p.vel.y = 0;
+          for (const other of this.players) {
+            if (other !== p && other.lives > 0) { p.pos.x = other.pos.x + (other.id === 1 ? 30 : -30); p.pos.y = other.pos.y; break; }
+          }
+        }
         p._prevLives = p.lives;
         if (p.justRevived) {
           p.justRevived = false;
