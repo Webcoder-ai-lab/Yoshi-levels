@@ -268,8 +268,8 @@ class Player {
   }
 
   draw(ctx: CanvasRenderingContext2D, cam: Camera) {
-    if (this.lives <= 0) return;
-    if (this.invinc > 0 && Math.floor(this.invinc * 8) % 2 === 0) return;
+    if (this.lives <= 0 && this.ghostTimer <= 0) return;
+    if (!this.ghostTimer && this.invinc > 0 && Math.floor(this.invinc * 8) % 2 === 0) return;
     const sx = this.pos.x - cam.x, sy = this.pos.y - cam.y;
 
     ctx.save(); ctx.translate(sx, sy);

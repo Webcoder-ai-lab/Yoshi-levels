@@ -268,8 +268,8 @@
     this.pos.x = 80; this.pos.y = 80; this.vel.x = 0; this.vel.y = 0; this.invinc = 2;
   };
   Player.prototype.draw = function(ctx, cam) {
-    if (this.lives <= 0) return;
-    if (this.invinc > 0 && Math.floor(this.invinc * 8) % 2 === 0) return;
+    if (this.lives <= 0 && this.ghostTimer <= 0) return;
+    if (!this.ghostTimer && this.invinc > 0 && Math.floor(this.invinc * 8) % 2 === 0) return;
     var sx = this.pos.x - cam.x, sy = this.pos.y - cam.y;
 
     ctx.save(); ctx.translate(sx, sy);
