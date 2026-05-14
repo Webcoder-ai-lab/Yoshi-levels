@@ -20,152 +20,45 @@
       background: #16162a;
       border: 1px solid #334;
       border-radius: 12px;
-      padding: 40px;
-      max-width: 520px;
+      padding: 30px;
+      max-width: 640px;
       width: 100%;
     }
     h1 {
       font-size: 28px;
       color: #4bc84b;
-      margin-bottom: 6px;
+      margin-bottom: 4px;
+      text-align: center;
     }
     p {
       color: #888;
-      margin-bottom: 24px;
       font-size: 14px;
+      text-align: center;
+      margin-bottom: 20px;
     }
-    label {
-      display: block;
-      font-size: 13px;
-      color: #aaa;
-      margin-bottom: 4px;
-      margin-top: 16px;
-    }
-    label:first-of-type { margin-top: 0; }
-    input, textarea {
+    iframe {
       width: 100%;
-      background: #0e0e1e;
-      border: 1px solid #334;
-      border-radius: 8px;
-      padding: 12px 14px;
-      font-size: 15px;
-      color: #eee;
-      outline: none;
-      transition: border-color 0.2s;
-    }
-    input:focus, textarea:focus { border-color: #4bc84b; }
-    textarea { resize: vertical; min-height: 100px; font-family: inherit; }
-    .opt { font-size: 12px; color: #666; margin-top: 2px; }
-    button {
-      margin-top: 24px;
-      width: 100%;
-      background: #4bc84b;
       border: none;
       border-radius: 8px;
-      padding: 14px;
-      font-size: 16px;
-      font-weight: bold;
-      color: #0a0a1a;
-      cursor: pointer;
-      transition: background 0.2s;
+      background: transparent;
     }
-    button:hover { background: #3aa83a; }
-    button:disabled { background: #2a5a2a; color: #666; cursor: default; }
-    .msg { margin-top: 16px; text-align: center; font-size: 14px; display: none; }
-    .msg.ok { color: #4bc84b; display: block; }
-    .msg.err { color: #f44; display: block; }
-    a { color: #4bc84b; }
+    .back {
+      display: block;
+      text-align: center;
+      margin-top: 16px;
+      color: #4bc84b;
+      font-size: 13px;
+      text-decoration: none;
+    }
+    .back:hover { text-decoration: underline; }
   </style>
 </head>
 <body>
   <div class="card">
-    <h1>Ideeën?</h1>
+    <h1>💡 Ideeën?</h1>
     <p>Heb je een idee voor Yoshi-levels? Laat het me weten!</p>
-
-    <form id="form" method="POST" target="hidden_iframe">
-      <label>Je idee *</label>
-      <textarea id="idee" name="entry.1585227235" required placeholder="Wat zou je graag zien in de game?"></textarea>
-
-      <label>Naam</label>
-      <input id="naam" name="entry.1189105999" type="text" placeholder="Jouw naam (optioneel)">
-      <div class="opt">Laat leeg als je anoniem wil blijven</div>
-
-      <label>Email</label>
-      <input id="email" name="entry.1032942480" type="email" placeholder="email@voorbeeld.nl (optioneel)">
-      <div class="opt">Alleen als ik contact mag opnemen</div>
-
-      <button type="submit" id="btn">Verstuur idee</button>
-    </form>
-
-    <div id="msg" class="msg"></div>
+    <iframe src="https://docs.google.com/forms/d/1JnS94eVFVZJetwEtI7zoYj0CLfpPQ0UBVOjYif4hFHE/viewform?embedded=true" height="480">Laden…</iframe>
+    <a class="back" href="yoshi.html">← Terug naar de game</a>
   </div>
-
-  <iframe id="hidden_iframe" name="hidden_iframe" style="display:none"></iframe>
-
-  <script>
-    // ════════════════════════════════════════════════════════════
-    // INSTALLATIE-INSTRUCTIES
-    // ════════════════════════════════════════════════════════════
-    //
-    // STAP 1 — Google Formulier maken
-    //   Ga naar https://forms.google.com en maak een nieuw formulier
-    //   Voeg deze 3 velden toe (in deze volgorde):
-    //     1. "Idee"  → Lange tekst (verplicht)
-    //     2. "Naam"  → Korte tekst (optioneel)
-    //     3. "Email" → Korte tekst (optioneel)
-    //   Klik op "Antwoorden" → "Koppeling maken met Spreadsheets"
-    //
-    // STAP 2 — Entry ID's vinden
-    //   Open het formulier in de browser (klik op "Verzenden" → "Link" → kopieer link)
-    //   Open die link in een incognitovenster
-    //   Druk Ctrl+Shift+I (DevTools) → ga naar tabblad "Elementen"
-    //   Zoek naar "entry." in de HTML (Ctrl+F)
-    //   Je ziet zoiets: <input name="entry.1234567890" ...>
-    //   Doe dit voor elk veld en pas de name-attributen hierboven aan
-    //
-    // STAP 3 — FORM_ID invullen
-    //   De link ziet eruit als:
-    //     https://docs.google.com/forms/d/e/{FORM_ID}/viewform
-    //   Kopieer de {FORM_ID} en plak hem hieronder:
-
-    const FORM_ID = '';
-
-    // ════════════════════════════════════════════════════════════
-    // NIETS VERANDEREN HIERONDER
-    // ════════════════════════════════════════════════════════════
-
-    const form = document.getElementById('form');
-    const msg = document.getElementById('msg');
-
-    if (FORM_ID) {
-      form.action = `https://docs.google.com/forms/d/e/${FORM_ID}/formResponse`;
-    }
-
-    form.addEventListener('submit', function(e) {
-      const idee = document.getElementById('idee').value.trim();
-      if (!idee) { e.preventDefault(); return; }
-
-      if (!FORM_ID) {
-        e.preventDefault();
-        msg.className = 'msg err';
-        msg.textContent = 'Het formulier is nog niet gekoppeld. Open dit bestand en vul FORM_ID in.';
-        return;
-      }
-
-      const btn = document.getElementById('btn');
-      btn.disabled = true;
-      btn.textContent = 'Versturen...';
-
-      // Google Forms redirects naar een bedankpagina, vang dat af
-      const iframe = document.getElementById('hidden_iframe');
-      iframe.onload = function() {
-        msg.className = 'msg ok';
-        msg.textContent = 'Bedankt! Je idee is ontvangen.';
-        form.reset();
-        btn.disabled = false;
-        btn.textContent = 'Verstuur idee';
-      };
-    });
-  </script>
 </body>
 </html>
