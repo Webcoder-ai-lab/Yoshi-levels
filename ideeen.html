@@ -20,32 +20,37 @@
       background: #16162a;
       border: 1px solid #334;
       border-radius: 12px;
-      padding: 30px;
-      max-width: 640px;
+      padding: 40px;
+      max-width: 500px;
       width: 100%;
+      text-align: center;
     }
     h1 {
-      font-size: 28px;
+      font-size: 32px;
       color: #4bc84b;
-      margin-bottom: 4px;
-      text-align: center;
+      margin-bottom: 8px;
     }
     p {
       color: #888;
-      font-size: 14px;
-      text-align: center;
-      margin-bottom: 20px;
+      font-size: 15px;
+      margin-bottom: 28px;
+      line-height: 1.5;
     }
-    iframe {
-      width: 100%;
-      border: none;
+    .btn {
+      display: inline-block;
+      background: #4bc84b;
+      color: #0a0a1a;
+      padding: 16px 40px;
       border-radius: 8px;
-      background: transparent;
+      font-size: 18px;
+      font-weight: bold;
+      text-decoration: none;
+      transition: background 0.2s;
     }
+    .btn:hover { background: #3aa83a; }
     .back {
       display: block;
-      text-align: center;
-      margin-top: 16px;
+      margin-top: 20px;
       color: #4bc84b;
       font-size: 13px;
       text-decoration: none;
@@ -56,8 +61,8 @@
 <body>
   <div class="card">
     <h1>💡 Ideeën?</h1>
-    <p>Heb je een idee voor Yoshi-levels? Laat het me weten!</p>
-    <iframe src="https://docs.google.com/forms/d/1JnS94eVFVZJetwEtI7zoYj0CLfpPQ0UBVOjYif4hFHE/viewform?embedded=true" height="480">Laden…</iframe>
+    <p>Heb je een idee voor Yoshi-levels?<br>Laat het me weten via het formulier!</p>
+    <a class="btn" href="https://docs.google.com/forms/d/1JnS94eVFVZJetwEtI7zoYj0CLfpPQ0UBVOjYif4hFHE/viewform" target="_blank">📝 Open formulier</a>
     <a class="back" href="yoshi.html">← Terug naar de game</a>
   </div>
 </body>
